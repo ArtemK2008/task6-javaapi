@@ -1,6 +1,5 @@
 package com.kalachev.task6;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -17,15 +16,17 @@ public class DataParser {
 	final String DATE_TIME_PATTERN = "yyyy-MM-dd_HH:mm:ss.SSS";
 	final String TIME_ZONE = "Europe/Monaco";
 	static final String UNDERSCORE = "_";
-	
 
-	public List<ReportRecord> initializeNewRaportRecords() throws IOException {
+	public List<ReportRecord> initializeNewRaportRecords(FilesContentHolder filesContentHolder) {
+		if(filesContentHolder == null) {
+			throw new IllegalArgumentException("file content holder has wrond data"); 
+		}
 		List<ReportRecord> racers = new ArrayList<>();
-		List<String> abbreviations = retrieveAbbreviation();
-		Map<String, String> persons = retrievePersonsByAbbreviation();
-		Map<String, String> teams = retrieveTeamByAbbreviation();
-		Map<String, Instant> startTimes = retrieveStartTimeByAbbreviation();
-		Map<String, Instant> endTimes = retrieveEndTimeByAbbreviation();
+		List<String> abbreviations = retrieveAbbreviation(filesContentHolder.getAbbreviateion());
+		Map<String, String> persons = retrievePersonsByAbbreviation(filesContentHolder.getAbbreviateion());
+		Map<String, String> teams = retrieveTeamByAbbreviation(filesContentHolder.getAbbreviateion());
+		Map<String, Instant> startTimes = retrieveStartTimeByAbbreviation(filesContentHolder.getStartTimesFile());
+		Map<String, Instant> endTimes = retrieveEndTimeByAbbreviation(filesContentHolder.getEndTimesFile());
 		for (String s : abbreviations) {
 			ReportRecord tempRecord = new ReportRecord(s, persons.get(s), teams.get(s));
 			tempRecord.setStartTime(startTimes.get(s));
@@ -35,16 +36,12 @@ public class DataParser {
 		return racers;
 	}
 
-	private List<String> retrieveAbbreviation() throws IOException {
-		DataReader reader = new DataReader();
-		List<String> abbreviations = reader.readFile("abbreviations.txt");
+	private List<String> retrieveAbbreviation(List<String> abbreviations) {
 		abbreviations = abbreviations.stream().map(line -> line.substring(0, 3)).collect(Collectors.toList());
 		return abbreviations;
 	}
 
-	private Map<String, Instant> retrieveEndTimeByAbbreviation() throws IOException {
-		DataReader reader = new DataReader();
-		List<String> racersLapEndTimes = reader.readFile("end.log");
+	private Map<String, Instant> retrieveEndTimeByAbbreviation(List<String> racersLapEndTimes) {
 		Map<String, String> endTimes = racersLapEndTimes.stream()
 				.collect(Collectors.toMap(p -> p.substring(0, 3), p -> p.substring(3)));
 		Map<String, Instant> endTimesConverted = new HashMap<>();
@@ -56,9 +53,7 @@ public class DataParser {
 		return endTimesConverted;
 	}
 
-	private Map<String, Instant> retrieveStartTimeByAbbreviation() throws IOException {
-		DataReader reader = new DataReader();
-		List<String> racersLapStartTimes = reader.readFile("start.log");
+	private Map<String, Instant> retrieveStartTimeByAbbreviation(List<String> racersLapStartTimes) {
 		Map<String, String> startTimes = racersLapStartTimes.stream()
 				.collect(Collectors.toMap(p -> p.substring(0, 3), p -> p.substring(3)));
 		Map<String, Instant> startTimesConverted = new HashMap<>();
@@ -70,15 +65,11 @@ public class DataParser {
 		return startTimesConverted;
 	}
 
-	private Map<String, String> retrievePersonsByAbbreviation() throws IOException {
-		DataReader reader = new DataReader();
-		List<String> persons = reader.readFile("abbreviations.txt");
+	private Map<String, String> retrievePersonsByAbbreviation(List<String> persons) {
 		return persons.stream().collect(Collectors.toMap(p -> p.substring(0, 3), this::retrieveBetweenDashsElement));
 	}
 
-	private Map<String, String> retrieveTeamByAbbreviation() throws IOException {
-		DataReader reader = new DataReader();
-		List<String> teams = reader.readFile("abbreviations.txt");
+	private Map<String, String> retrieveTeamByAbbreviation(List<String> teams) {
 		return teams.stream().collect(Collectors.toMap(p -> p.substring(0, 3), this::retrieveElementAfterLastDash));
 	}
 
@@ -99,4 +90,5 @@ public class DataParser {
 		ZonedDateTime zdt = ldt.atZone(ZoneId.of(TIME_ZONE));
 		return zdt.toInstant();
 	}
+	
 }

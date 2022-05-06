@@ -1,7 +1,5 @@
 package com.kalachev.task6;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -18,18 +16,18 @@ public class ReportBuilder {
 	static final String TIME_FORMAT = "mm:ss.SSS";
 	static final String REPORT_FORMAT = "%2d.%20s |%30s|%s%n";
 
-	public String prepareReport() throws IOException {
-		List<ReportRecord> racers = initializeSortedRacersReport();
+	public String buildReport() {
+		List<ReportRecord> racers = sortRacersRecords();
 		StringBuilder sb = new StringBuilder();
 		racers.stream().limit(15).forEach(r -> sb.append(formatSingleLine(r)));
-		sb.append(unicodeCharPrineter());
+		sb.append(unicodeCharLinePrineter());
 		racers.stream().skip(15).forEach(r -> sb.append(formatSingleLine(r)));
 		return sb.toString();
 	}
 
-	private List<ReportRecord> initializeSortedRacersReport() throws IOException {
+	private List<ReportRecord> sortRacersRecords() {
 		DataParser dp = new DataParser();
-		List<ReportRecord> racers = dp.initializeNewRaportRecords();
+		List<ReportRecord> racers = dp.initializeNewRaportRecords(new FilesContentHolder());
 		return racers.stream().sorted().collect(Collectors.toList());
 	}
 
@@ -48,7 +46,7 @@ public class ReportBuilder {
 		}
 	}
 
-	private String unicodeCharPrineter() throws UnsupportedEncodingException {
+	private String unicodeCharLinePrineter() {
 		String dashes = String.join("", Collections.nCopies(Math.max(0, 64), "-"));
 		return '\u2022' + dashes + NEWLINE;
 	}

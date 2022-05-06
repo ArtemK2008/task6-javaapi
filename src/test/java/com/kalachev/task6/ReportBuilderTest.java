@@ -7,8 +7,10 @@ import org.junit.jupiter.api.Test;
 class ReportBuilderTest {
 
 	@Test
-	void test() {
-		fail("Not yet implemented");
+	void buildReport_shouldOutlineEverythingCorrectly_WhenAllFilesAreValid() {
+		
+		ReportBuilder builder = new ReportBuilder();
+		String actual = builder.buildReport();
 	}
 
 }
