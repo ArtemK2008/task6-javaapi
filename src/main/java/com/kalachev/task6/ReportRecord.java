@@ -71,7 +71,12 @@ public class ReportRecord implements Comparable<ReportRecord> {
 	public int compareTo(ReportRecord otherRacer) {
 		int otherRacerTime = (int) otherRacer.caclulateLapTime(otherRacer.getStartTime(), otherRacer.getEndTime());
 		int thisRacerTime = (int) this.caclulateLapTime(this.getStartTime(), this.getEndTime());
-		return thisRacerTime- otherRacerTime;
+		return thisRacerTime - otherRacerTime;
+	}
+
+	@Override
+	public String toString() {
+		return abbreviations + " " + name + " " + team + " " + startTime + " " + endTime;
 	}
 
 }

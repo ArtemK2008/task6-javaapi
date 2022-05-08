@@ -28,5 +28,17 @@ public class FilesContentHolder {
 		return endTimesFile;
 	}
 
+	public void setAbbreviateion(String abbreviateion) {
+		this.abbreviateion = reader.readFile(abbreviateion);
+	}
+
+	public void setStartTimesFile(String startTimesFile) {
+		this.startTimesFile = reader.readFile(startTimesFile);
+	}
+
+	public void setEndTimesFile(String endTimesFile) {
+		this.endTimesFile = reader.readFile(endTimesFile);
+	}
+
 
 }
